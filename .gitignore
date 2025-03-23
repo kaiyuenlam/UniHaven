@@ -1,0 +1,37 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# pipenv
+Pipfile
+Pipfile.lock
+
+# VS Code settings
+.vscode/
+
+# macOS system files
+.DS_Store
+
+# SQLite database
+*.sqlite3
+
+# Logs and local settings
+*.log
+*.pot
+*.pyc
+
+# Django cache
+*.mo
+*.py[cod]
+*.db
+
+# Static/media/cache output
+staticfiles/
+media/
