@@ -41,8 +41,7 @@ unihaven/
 │   ├── urls.py
 │   └── wsgi.py
 ├── manage.py          # Django project management tool
-├── requirements.txt   # Dependency list for pip
-└── doc/               # Documentation (e.g., prerequisites.md)
+└── requirements.txt   # Dependency list for pip
 ```
 
 # Installation Instructions
