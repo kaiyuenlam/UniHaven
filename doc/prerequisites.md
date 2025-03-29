@@ -91,7 +91,7 @@ a folder (doc) for putting the non-code info inside the project
 
 1. `Fetch` (check for updates) and `pull` (update local) before working
 2. **_NEVER_** directly committ to `main`, unless 100% complete
-3. Create and Work on the `branch` based on Project Backlog
+3. Create and Work on the `branch` based on Epic in the Project Backlog
 4. Before commit
     1. Update dependencies
 
