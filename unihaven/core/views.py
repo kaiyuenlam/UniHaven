@@ -18,13 +18,9 @@ from .serializers import (
 )
 
 # Using ViewSets to handle basic CRUD operations
-class HKUCampusViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ViewSet for HKUCampus model, providing read-only operations.
-    """
+class HKUCampusViewSet(viewsets.ModelViewSet):
     queryset = HKUCampus.objects.all()
     serializer_class = HKUCampusSerializer
-
 class AccommodationViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Accommodation model, providing CRUD operations.
