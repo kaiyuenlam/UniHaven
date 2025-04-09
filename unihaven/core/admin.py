@@ -1,8 +1,13 @@
 from django.contrib import admin
 from .models import (
     Accommodation, AccommodationPhoto, HKUMember, CEDARSSpecialist,
-    Reservation, Rating, Notification, HKUCampus
+    Reservation, Rating, Notification, HKUCampus, Owner
 )
+
+@admin.register(Owner)
+class OwnerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'phone', 'address')
+    search_fields = ('name', 'email')
 
 @admin.register(HKUCampus)
 class HKUCampusAdmin(admin.ModelAdmin):

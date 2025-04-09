@@ -70,6 +70,7 @@ pip install -r requirements.txt
 ### 4. Apply Migrations
 Set up the database schema:
 ```bash
+python manage.py makemigrations # run the commonds after every modifications to the model
 python manage.py migrate
 ```
 
