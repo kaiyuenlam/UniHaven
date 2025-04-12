@@ -11,12 +11,11 @@ from rest_framework.pagination import PageNumberPagination
 
 from .models import (
     Accommodation, AccommodationPhoto, HKUMember, CEDARSSpecialist,
-    Reservation, Rating, Notification, HKUCampus, Owner, ActionLog
+    Reservation, Rating, HKUCampus, Owner, ActionLog
 )
 from .serializers import (
     AccommodationSerializer, AccommodationPhotoSerializer, HKUMemberSerializer,
-    CEDARSSpecialistSerializer, ReservationSerializer, RatingSerializer,
-    NotificationSerializer, HKUCampusSerializer
+    CEDARSSpecialistSerializer, ReservationSerializer, RatingSerializer, HKUCampusSerializer
 )
 
 # Using ViewSets to handle basic CRUD operations
@@ -114,10 +113,11 @@ class RatingViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(accommodation__id=accommodation_id)
         return queryset
 
+"""
 class NotificationViewSet(viewsets.ModelViewSet):
-    """
+    
     ViewSet for Notification model, providing CRUD operations.
-    """
+    
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
 
@@ -127,6 +127,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
         if specialist_id:
             queryset = queryset.filter(specialist__id=specialist_id)
         return queryset
+"""
 
 class HKUMemberViewSet(viewsets.ModelViewSet):
     """
@@ -382,6 +383,7 @@ def reserve_accommodation(request, pk):
         accommodation.is_available = False
         accommodation.save()
 
+        """
         # Create notifications for CEDARS specialists
         for specialist in CEDARSSpecialist.objects.all():
             Notification.objects.create(
@@ -389,6 +391,7 @@ def reserve_accommodation(request, pk):
                 reservation=reservation,
                 type='RESERVATION'
             )
+        """
             
         # Log the action
         ActionLog.objects.create(
@@ -497,6 +500,7 @@ def cancel_reservation(request, pk):
     # print(f"检查更新: 预订状态={updated_reservation.status}, 住宿可用性={updated_accommodation.is_available}")
 
     # 为CEDARS专家创建通知
+    """
     notification_count = 0
     for specialist in CEDARSSpecialist.objects.all():
         notification = Notification.objects.create(
@@ -506,6 +510,7 @@ def cancel_reservation(request, pk):
         )
         notification_count += 1
     # print(f"已创建 {notification_count} 条取消通知")
+    """
 
     return Response({"status": "Reservation cancelled successfully"})
 
@@ -550,11 +555,12 @@ def rate_accommodation(request, pk):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+"""
 @api_view(['POST'])
 def mark_notification_read(request, pk):
-    """
+    
     Mark a notification as read.
-    """
+    
     try:
         notification = Notification.objects.get(pk=pk)
     except Notification.DoesNotExist:
@@ -566,6 +572,7 @@ def mark_notification_read(request, pk):
     notification.is_read = True
     notification.save()
     return Response({"status": "Notification marked as read"})
+"""
 
 @api_view(['GET'])
 def get_member_reservations(request, pk):
@@ -584,11 +591,12 @@ def get_member_reservations(request, pk):
     serializer = ReservationSerializer(reservations, many=True)
     return Response(serializer.data)
 
+"""
 @api_view(['GET'])
 def get_specialist_notifications(request, pk):
-    """
+    
     Get all notifications of a specialist.
-    """
+    
     try:
         specialist = CEDARSSpecialist.objects.get(pk=pk)
     except CEDARSSpecialist.DoesNotExist:
@@ -596,10 +604,12 @@ def get_specialist_notifications(request, pk):
             {"error": "Specialist not found"},
             status=status.HTTP_404_NOT_FOUND
         )
-
+    
     notifications = Notification.objects.filter(specialist=specialist)
     serializer = NotificationSerializer(notifications, many=True)
+    
     return Response(serializer.data)
+"""
 
 @api_view(['POST'])
 def update_reservation_status(request, pk):
@@ -645,6 +655,7 @@ def update_reservation_status(request, pk):
         accommodation.is_available = True
         accommodation.save()
         
+        """
         # Create notifications for CEDARS specialists
         for specialist in CEDARSSpecialist.objects.all():
             Notification.objects.create(
@@ -652,6 +663,7 @@ def update_reservation_status(request, pk):
                 reservation=reservation,
                 type='CANCELLATION'
             )
+        """
     
     # Return the updated reservation
     serializer = ReservationSerializer(reservation)

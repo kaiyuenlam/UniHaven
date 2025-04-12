@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Accommodation, AccommodationPhoto, HKUMember, CEDARSSpecialist,
-    Reservation, Rating, Notification, HKUCampus, Owner
+    Reservation, Rating, HKUCampus, Owner
 )
 
 @admin.register(Owner)
@@ -44,7 +44,9 @@ class RatingAdmin(admin.ModelAdmin):
     list_display = ('accommodation', 'member', 'score', 'created_at')
     list_filter = ('score',)
 
+"""
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ('specialist', 'type', 'is_read', 'created_at')
     list_filter = ('type', 'is_read')
+"""

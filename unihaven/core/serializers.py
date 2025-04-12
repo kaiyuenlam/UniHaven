@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.utils import timezone
 from .models import (
     Accommodation, AccommodationPhoto, HKUMember, CEDARSSpecialist,
-    Reservation, Rating, Notification, HKUCampus, Owner
+    Reservation, Rating, HKUCampus, Owner
 )
 
 class OwnerSerializer(serializers.ModelSerializer):
@@ -137,7 +137,7 @@ class RatingSerializer(serializers.ModelSerializer):
             else:
                 raise serializers.ValidationError("This reservation has already been rated")
         return data
-
+"""
 class NotificationSerializer(serializers.ModelSerializer):
     reservation_details = serializers.SerializerMethodField()
 
@@ -156,4 +156,5 @@ class NotificationSerializer(serializers.ModelSerializer):
             'reserved_from': obj.reservation.reserved_from,
             'reserved_to': obj.reservation.reserved_to
         }
+"""
     

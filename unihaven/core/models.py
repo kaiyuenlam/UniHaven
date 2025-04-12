@@ -181,6 +181,7 @@ class Reservation(models.Model):
             self.accommodation.is_available = True
             self.accommodation.save()
             
+            """
             # Create notifications
             from .models import CEDARSSpecialist, Notification
             for specialist in CEDARSSpecialist.objects.all():
@@ -190,6 +191,8 @@ class Reservation(models.Model):
                     type='CANCELLATION'
                 )
             return True
+            """
+            
         return False
 
     def __str__(self):
@@ -216,8 +219,9 @@ class Rating(models.Model):
     def __str__(self):
         return f"{self.member.name}'s {self.score}-star rating for {self.accommodation.name}"
 
+"""
 class Notification(models.Model):
-    """Notifications for CEDARS specialists"""
+    # Notifications for CEDARS specialists
     TYPE_CHOICES = [
         ('RESERVATION', 'New Reservation'),
         ('CANCELLATION', 'Reservation Cancelled'),
@@ -231,6 +235,7 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.type} notification for {self.specialist.name}"
+"""
 
 class ActionLog(models.Model):
     """Log of actions performed in the system for audit purposes"""
