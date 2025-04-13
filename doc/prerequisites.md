@@ -34,7 +34,7 @@ unihaven/
 │   │       │   └── home.css
 │   │       └── js/    # js files
 │   │           └── home.js
-├── demo/              # Project configuration (settings, URLs)
+├── project/              # Project configuration (settings, URLs)
 │   ├── __init__.py
 │   ├── asgi.py
 │   ├── settings.py
