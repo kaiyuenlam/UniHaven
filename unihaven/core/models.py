@@ -5,7 +5,7 @@ import math
 class Owner(models.Model):
     """Property owner who offers accommodations for rent"""
     name = models.CharField(max_length=200)
-    email = models.EmailField(primary_key=True)
+    email = models.EmailField()
     phone = models.CharField(max_length=20)
     address = models.TextField(blank=True)
     
