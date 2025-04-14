@@ -2,19 +2,22 @@ from rest_framework import serializers
 from django.utils import timezone
 from .models import (
     Accommodation, AccommodationPhoto, HKUMember, CEDARSSpecialist,
-    Reservation, Rating, HKUCampus, Owner
+    Reservation, Rating, HKUCampus, Owner, ActionLog
 )
 
+# -------------------- Owner --------------------
 class OwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Owner
-        fields = ['id', 'name', 'email', 'phone', 'address']
+        fields = ['name', 'email', 'phone', 'address']
 
+# -------------------- HKUCampus --------------------
 class HKUCampusSerializer(serializers.ModelSerializer):
     class Meta:
         model = HKUCampus
         fields = '__all__'
 
+# -------------------- AccommodationPhoto --------------------
 class AccommodationPhotoSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
     
@@ -33,12 +36,14 @@ class AccommodationPhotoSerializer(serializers.ModelSerializer):
             return obj.image.url
         return None
 
+# -------------------- Accommodation --------------------
 class AccommodationSerializer(serializers.ModelSerializer):
     photos = AccommodationPhotoSerializer(many=True, read_only=True)
     average_rating = serializers.SerializerMethodField()
     rating_count = serializers.SerializerMethodField()
     type_display = serializers.CharField(source='get_type_display', read_only=True)
-    owner_details = OwnerSerializer(source='owner', read_only=True)
+    owner_details = OwnerSerializer(write_only=True)
+    owner = serializers.PrimaryKeyRelatedField(read_only=True)
     
     class Meta:
         model = Accommodation
@@ -49,26 +54,40 @@ class AccommodationSerializer(serializers.ModelSerializer):
             'monthly_rent', 'owner', 'owner_details', 'is_available', 
             'photos', 'average_rating', 'rating_count'
         ]
+
+    def create(self, validated_data):
+        owner_data = validated_data.pop('owner_details', None)
+        if owner_data:
+            owner = Owner.objects.create(**owner_data)
+            validated_data['owner'] = owner
+        return super().create(validated_data)
         
     def get_average_rating(self, obj):
         ratings = obj.ratings.all()
-        if not ratings:
-            return None
-        return round(sum(rating.score for rating in ratings) / len(ratings), 1)
+        if ratings.exists():
+            try:
+                avg = sum(rating.score for rating in ratings) / ratings.count()
+                return round(avg, 1)
+            except Exception as e:
+                return None
+        return None
         
     def get_rating_count(self, obj):
         return obj.ratings.count()
 
+# -------------------- HKUMember --------------------
 class HKUMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = HKUMember
         fields = ['id', 'name', 'email', 'phone']
 
+# -------------------- CEDARSSpecialist --------------------
 class CEDARSSpecialistSerializer(serializers.ModelSerializer):
     class Meta:
         model = CEDARSSpecialist
         fields = ['id', 'name', 'email', 'phone']
 
+# -------------------- Reservation --------------------
 class ReservationSerializer(serializers.ModelSerializer):
     accommodation_name = serializers.ReadOnlyField(source='accommodation.name')
     member_name = serializers.ReadOnlyField(source='member.name')
@@ -93,29 +112,32 @@ class ReservationSerializer(serializers.ModelSerializer):
     
     def validate(self, data):
         """
-        Validate reservation dates and other constraints.
+        Validate reservation dates and availability.
         """
+        reserved_from = data.get('reserved_from')
+        reserved_to = data.get('reserved_to')
         # Check that reserved_from is before reserved_to
-        if data.get('reserved_from') and data.get('reserved_to'):
-            if data['reserved_from'] > data['reserved_to']:
+        if reserved_from and reserved_to:
+            if reserved_from > reserved_to:
                 raise serializers.ValidationError("End date must be after start date")
                 
         # Check that reserved_from is not in the past for new reservations
-        if self.instance is None and data.get('reserved_from'):
-            if data['reserved_from'] < timezone.now().date():
+        if self.instance is None and reserved_from:
+            if reserved_from < timezone.now().date():
                 raise serializers.ValidationError("Reservation start date cannot be in the past")
                 
         # Check that the accommodation is available for the requested dates
-        if self.instance is None and data.get('accommodation'):
+        accommodation = data.get('accommodation')
+        if accommodation and reserved_from and reserved_to:
             accommodation = data['accommodation']
             if data.get('reserved_from') and data.get('reserved_to'):
-                if data['reserved_from'] < accommodation.available_from or data['reserved_to'] > accommodation.available_to:
+                if reserved_from < accommodation.available_from or reserved_to > accommodation.available_to:
                     raise serializers.ValidationError(
                         "Requested dates are outside the accommodation's availability period"
                     )
-        
         return data
 
+# -------------------- Rating --------------------
 class RatingSerializer(serializers.ModelSerializer):
     member_name = serializers.ReadOnlyField(source='member.name')
 
@@ -131,30 +153,18 @@ class RatingSerializer(serializers.ModelSerializer):
         Check that the reservation is completed and hasn't been rated yet.
         """
         reservation = data.get('reservation')
-        if reservation and not reservation.can_be_rated():
-            if not reservation.status == 'COMPLETED':
+        if reservation:
+            if reservation.status != 'COMPLETED':
                 raise serializers.ValidationError("Can only rate completed reservations")
-            else:
+
+            if not reservation.can_be_rated():
                 raise serializers.ValidationError("This reservation has already been rated")
+        else:
+            raise serializers.ValidationError("Reservation is required for rating.")
         return data
-"""
-class NotificationSerializer(serializers.ModelSerializer):
-    reservation_details = serializers.SerializerMethodField()
 
+# -------------------- ActionLog --------------------
+class ActionLogSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Notification
-        fields = [
-            'id', 'specialist', 'reservation', 'reservation_details',
-            'type', 'is_read', 'created_at'
-        ]
-
-    def get_reservation_details(self, obj):
-        return {
-            'accommodation': obj.reservation.accommodation.name,
-            'member': obj.reservation.member.name,
-            'status': obj.reservation.status,
-            'reserved_from': obj.reservation.reserved_from,
-            'reserved_to': obj.reservation.reserved_to
-        }
-"""
-    
+        model = ActionLog
+        fields = '__all__'

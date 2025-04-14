@@ -192,7 +192,7 @@ class Reservation(models.Model):
                 )
             return True
             """
-            
+
         return False
 
     def __str__(self):
@@ -218,24 +218,6 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"{self.member.name}'s {self.score}-star rating for {self.accommodation.name}"
-
-"""
-class Notification(models.Model):
-    # Notifications for CEDARS specialists
-    TYPE_CHOICES = [
-        ('RESERVATION', 'New Reservation'),
-        ('CANCELLATION', 'Reservation Cancelled'),
-    ]
-
-    specialist = models.ForeignKey(CEDARSSpecialist, on_delete=models.CASCADE)
-    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES)
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.type} notification for {self.specialist.name}"
-"""
 
 class ActionLog(models.Model):
     """Log of actions performed in the system for audit purposes"""

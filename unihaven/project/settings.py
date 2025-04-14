@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 'core.apps.CoreConfig',
+    'drf_spectacular',
     'rest_framework',
     'core',
 ]
@@ -106,6 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Add REST framework settings
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': [
@@ -115,6 +118,14 @@ REST_FRAMEWORK = {
 }
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'UniHaven API',
+    'DESCRIPTION': 'API endpoints for UniHaven including Accommodation, Reservation, Rating, Member, and Specialist resources. '
+                   'Refer to this documentation for details on request parameters and responses.',
+    'VERSION': '1.0.0',
+    # You can add more OpenAPI metadata here (terms, contact, license, etc.)
+}
 
 LANGUAGE_CODE = 'en-us'
 
@@ -134,3 +145,48 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,  
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': str(BASE_DIR / 'django.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        # Root logger gets all messages from DEBUG and above
+        '': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+        },
+        # Django's internal logger
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        # Logger for app
+        'core': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

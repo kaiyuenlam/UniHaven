@@ -1,0 +1,2275 @@
+openapi: 3.0.3
+info:
+  title: UniHaven API
+  version: 1.0.0
+  description: API endpoints for UniHaven including Accommodation, Reservation, Rating,
+    Member, and Specialist resources. Refer to this documentation for details on request
+    parameters and responses.
+paths:
+  /api/accommodations/:
+    get:
+      operationId: accommodations_list
+      description: ViewSet for Accommodation model, providing CRUD operations.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - accommodations
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAccommodationList'
+          description: ''
+    post:
+      operationId: accommodations_create
+      description: ViewSet for Accommodation model, providing CRUD operations.
+      tags:
+      - accommodations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accommodation'
+          description: ''
+  /api/accommodations/{id}/:
+    get:
+      operationId: accommodations_retrieve
+      description: ViewSet for Accommodation model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation.
+        required: true
+      tags:
+      - accommodations
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accommodation'
+          description: ''
+    put:
+      operationId: accommodations_update
+      description: ViewSet for Accommodation model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation.
+        required: true
+      tags:
+      - accommodations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accommodation'
+          description: ''
+    patch:
+      operationId: accommodations_partial_update
+      description: ViewSet for Accommodation model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation.
+        required: true
+      tags:
+      - accommodations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAccommodation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAccommodation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAccommodation'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accommodation'
+          description: ''
+    delete:
+      operationId: accommodations_destroy
+      description: ViewSet for Accommodation model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation.
+        required: true
+      tags:
+      - accommodations
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/accommodations/{id}/mark_unavailable/:
+    post:
+      operationId: accommodations_mark_unavailable_create
+      description: |-
+        Mark this accommodation as unavailable.
+        Optionally log the specialist who performed the action.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation.
+        required: true
+      tags:
+      - accommodations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accommodation'
+          description: ''
+  /api/accommodations/{id}/photos/:
+    get:
+      operationId: accommodations_photos_retrieve
+      description: Retrieve photos for this accommodation.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation.
+        required: true
+      tags:
+      - accommodations
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accommodation'
+          description: ''
+  /api/accommodations/{id}/reserve/:
+    post:
+      operationId: accommodations_reserve_create
+      description: |-
+        Reserve this accommodation.
+        Expects fields: member_id, reserved_from, reserved_to, contact_name, contact_phone.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation.
+        required: true
+      tags:
+      - accommodations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accommodation'
+          description: ''
+  /api/accommodations/{id}/upload_photo/:
+    post:
+      operationId: accommodations_upload_photo_create
+      description: |-
+        Upload a photo for this accommodation.
+        Expects an image file in request.FILES.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation.
+        required: true
+      tags:
+      - accommodations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accommodation'
+          description: ''
+  /api/accommodations/search/:
+    get:
+      operationId: accommodations_search_retrieve
+      description: |-
+        Search for accommodations using query parameters.
+        Supports filters such as type, availability, price range, and also optional sorting by distance.
+      tags:
+      - accommodations
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accommodation'
+          description: ''
+  /api/action-logs/:
+    get:
+      operationId: action_logs_retrieve
+      description: Get a list of action logs for audit purposes.
+      tags:
+      - action-logs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/campuses/:
+    get:
+      operationId: campuses_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - campuses
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHKUCampusList'
+          description: ''
+    post:
+      operationId: campuses_create
+      tags:
+      - campuses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HKUCampus'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HKUCampus'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HKUCampus'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HKUCampus'
+          description: ''
+  /api/campuses/{id}/:
+    get:
+      operationId: campuses_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hku campus.
+        required: true
+      tags:
+      - campuses
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HKUCampus'
+          description: ''
+    put:
+      operationId: campuses_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hku campus.
+        required: true
+      tags:
+      - campuses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HKUCampus'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HKUCampus'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HKUCampus'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HKUCampus'
+          description: ''
+    patch:
+      operationId: campuses_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hku campus.
+        required: true
+      tags:
+      - campuses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHKUCampus'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedHKUCampus'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHKUCampus'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HKUCampus'
+          description: ''
+    delete:
+      operationId: campuses_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hku campus.
+        required: true
+      tags:
+      - campuses
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/members/:
+    get:
+      operationId: members_list
+      description: ViewSet for HKUMember model, providing CRUD operations.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - members
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHKUMemberList'
+          description: ''
+    post:
+      operationId: members_create
+      description: ViewSet for HKUMember model, providing CRUD operations.
+      tags:
+      - members
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HKUMember'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HKUMember'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HKUMember'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HKUMember'
+          description: ''
+  /api/members/{id}/:
+    get:
+      operationId: members_retrieve
+      description: ViewSet for HKUMember model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hku member.
+        required: true
+      tags:
+      - members
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HKUMember'
+          description: ''
+    put:
+      operationId: members_update
+      description: ViewSet for HKUMember model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hku member.
+        required: true
+      tags:
+      - members
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HKUMember'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HKUMember'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HKUMember'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HKUMember'
+          description: ''
+    patch:
+      operationId: members_partial_update
+      description: ViewSet for HKUMember model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hku member.
+        required: true
+      tags:
+      - members
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHKUMember'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedHKUMember'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHKUMember'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HKUMember'
+          description: ''
+    delete:
+      operationId: members_destroy
+      description: ViewSet for HKUMember model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hku member.
+        required: true
+      tags:
+      - members
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/members/{id}/reservations/:
+    get:
+      operationId: members_reservations_retrieve
+      description: ViewSet for HKUMember model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hku member.
+        required: true
+      tags:
+      - members
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HKUMember'
+          description: ''
+  /api/photos/:
+    get:
+      operationId: photos_list
+      description: ViewSet for AccommodationPhoto model, providing CRUD operations.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - photos
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAccommodationPhotoList'
+          description: ''
+    post:
+      operationId: photos_create
+      description: ViewSet for AccommodationPhoto model, providing CRUD operations.
+      tags:
+      - photos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccommodationPhoto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AccommodationPhoto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AccommodationPhoto'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccommodationPhoto'
+          description: ''
+  /api/photos/{id}/:
+    get:
+      operationId: photos_retrieve
+      description: ViewSet for AccommodationPhoto model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation photo.
+        required: true
+      tags:
+      - photos
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccommodationPhoto'
+          description: ''
+    put:
+      operationId: photos_update
+      description: ViewSet for AccommodationPhoto model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation photo.
+        required: true
+      tags:
+      - photos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccommodationPhoto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AccommodationPhoto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AccommodationPhoto'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccommodationPhoto'
+          description: ''
+    patch:
+      operationId: photos_partial_update
+      description: ViewSet for AccommodationPhoto model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation photo.
+        required: true
+      tags:
+      - photos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAccommodationPhoto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAccommodationPhoto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAccommodationPhoto'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccommodationPhoto'
+          description: ''
+    delete:
+      operationId: photos_destroy
+      description: ViewSet for AccommodationPhoto model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this accommodation photo.
+        required: true
+      tags:
+      - photos
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/ratings/:
+    get:
+      operationId: ratings_list
+      description: |-
+        ViewSet for Rating model, providing read-only operations along with custom actions:
+        - 'moderate': to moderate a specific rating.
+        - 'pending': to retrieve all ratings that have not yet been moderated.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - ratings
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRatingList'
+          description: ''
+  /api/ratings/{id}/:
+    get:
+      operationId: ratings_retrieve
+      description: |-
+        ViewSet for Rating model, providing read-only operations along with custom actions:
+        - 'moderate': to moderate a specific rating.
+        - 'pending': to retrieve all ratings that have not yet been moderated.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this rating.
+        required: true
+      tags:
+      - ratings
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+          description: ''
+  /api/ratings/{id}/moderate/:
+    post:
+      operationId: ratings_moderate_create
+      description: |-
+        Moderate a specific rating.
+
+        Expects:
+        - specialist_id: ID of the CEDARSSpecialist performing moderation.
+        - is_approved: Boolean indicating approval (default is True).
+        - moderation_note: Optional note explaining the decision.
+
+        Returns the updated rating data along with a status message.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this rating.
+        required: true
+      tags:
+      - ratings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rating'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Rating'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Rating'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+          description: ''
+  /api/ratings/pending/:
+    get:
+      operationId: ratings_pending_retrieve
+      description: |-
+        Retrieve all ratings that have not yet been moderated.
+        This endpoint returns ratings where 'moderated_by' is null, ordered by the creation time.
+      tags:
+      - ratings
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+          description: ''
+  /api/reservations/:
+    get:
+      operationId: reservations_list
+      description: ViewSet for Reservation model, providing CRUD operations.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - reservations
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReservationList'
+          description: ''
+    post:
+      operationId: reservations_create
+      description: ViewSet for Reservation model, providing CRUD operations.
+      tags:
+      - reservations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+          description: ''
+  /api/reservations/{id}/:
+    get:
+      operationId: reservations_retrieve
+      description: ViewSet for Reservation model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this reservation.
+        required: true
+      tags:
+      - reservations
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+          description: ''
+    put:
+      operationId: reservations_update
+      description: ViewSet for Reservation model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this reservation.
+        required: true
+      tags:
+      - reservations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+          description: ''
+    patch:
+      operationId: reservations_partial_update
+      description: ViewSet for Reservation model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this reservation.
+        required: true
+      tags:
+      - reservations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReservation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedReservation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReservation'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+          description: ''
+    delete:
+      operationId: reservations_destroy
+      description: ViewSet for Reservation model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this reservation.
+        required: true
+      tags:
+      - reservations
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/reservations/{id}/cancel/:
+    post:
+      operationId: reservations_cancel_create
+      description: |-
+        Cancel a reservation if it is not yet confirmed.
+        Changes status to 'CANCELLED' and marks the associated accommodation as available.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this reservation.
+        required: true
+      tags:
+      - reservations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+          description: ''
+  /api/reservations/{id}/update-status/:
+    post:
+      operationId: reservations_update_status_create
+      description: |-
+        Update the status of a reservation.
+        Expects a POST with a 'status' field representing the new status.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this reservation.
+        required: true
+      tags:
+      - reservations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+          description: ''
+  /api/specialists/:
+    get:
+      operationId: specialists_list
+      description: ViewSet for CEDARSSpecialist model, providing CRUD operations.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - specialists
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCEDARSSpecialistList'
+          description: ''
+    post:
+      operationId: specialists_create
+      description: ViewSet for CEDARSSpecialist model, providing CRUD operations.
+      tags:
+      - specialists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CEDARSSpecialist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CEDARSSpecialist'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CEDARSSpecialist'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CEDARSSpecialist'
+          description: ''
+  /api/specialists/{id}/:
+    get:
+      operationId: specialists_retrieve
+      description: ViewSet for CEDARSSpecialist model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cedars specialist.
+        required: true
+      tags:
+      - specialists
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CEDARSSpecialist'
+          description: ''
+    put:
+      operationId: specialists_update
+      description: ViewSet for CEDARSSpecialist model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cedars specialist.
+        required: true
+      tags:
+      - specialists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CEDARSSpecialist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CEDARSSpecialist'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CEDARSSpecialist'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CEDARSSpecialist'
+          description: ''
+    patch:
+      operationId: specialists_partial_update
+      description: ViewSet for CEDARSSpecialist model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cedars specialist.
+        required: true
+      tags:
+      - specialists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCEDARSSpecialist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCEDARSSpecialist'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCEDARSSpecialist'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CEDARSSpecialist'
+          description: ''
+    delete:
+      operationId: specialists_destroy
+      description: ViewSet for CEDARSSpecialist model, providing CRUD operations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cedars specialist.
+        required: true
+      tags:
+      - specialists
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    Accommodation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        building_name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        type_display:
+          type: string
+          readOnly: true
+        num_bedrooms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        num_beds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        address:
+          type: string
+        geo_address:
+          type: string
+          maxLength: 19
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        available_from:
+          type: string
+          format: date
+        available_to:
+          type: string
+          format: date
+        monthly_rent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        owner:
+          type: integer
+          readOnly: true
+        owner_details:
+          allOf:
+          - $ref: '#/components/schemas/Owner'
+          writeOnly: true
+        is_available:
+          type: boolean
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccommodationPhoto'
+          readOnly: true
+        average_rating:
+          type: string
+          readOnly: true
+        rating_count:
+          type: string
+          readOnly: true
+      required:
+      - address
+      - available_from
+      - available_to
+      - average_rating
+      - building_name
+      - geo_address
+      - id
+      - latitude
+      - longitude
+      - monthly_rent
+      - name
+      - num_bedrooms
+      - num_beds
+      - owner
+      - owner_details
+      - photos
+      - rating_count
+      - type
+      - type_display
+    AccommodationPhoto:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        accommodation:
+          type: integer
+        image:
+          type: string
+          format: uri
+        image_url:
+          type: string
+          readOnly: true
+        caption:
+          type: string
+          maxLength: 200
+        is_primary:
+          type: boolean
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - accommodation
+      - created_at
+      - id
+      - image
+      - image_url
+    CEDARSSpecialist:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 20
+      required:
+      - email
+      - id
+      - name
+      - phone
+    HKUCampus:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+      required:
+      - id
+      - latitude
+      - longitude
+      - name
+    HKUMember:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 20
+      required:
+      - email
+      - id
+      - name
+    Owner:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+      required:
+      - email
+      - name
+      - phone
+    PaginatedAccommodationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Accommodation'
+    PaginatedAccommodationPhotoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccommodationPhoto'
+    PaginatedCEDARSSpecialistList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CEDARSSpecialist'
+    PaginatedHKUCampusList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HKUCampus'
+    PaginatedHKUMemberList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HKUMember'
+    PaginatedRatingList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rating'
+    PaginatedReservationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reservation'
+    PatchedAccommodation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        building_name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        type_display:
+          type: string
+          readOnly: true
+        num_bedrooms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        num_beds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        address:
+          type: string
+        geo_address:
+          type: string
+          maxLength: 19
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        available_from:
+          type: string
+          format: date
+        available_to:
+          type: string
+          format: date
+        monthly_rent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        owner:
+          type: integer
+          readOnly: true
+        owner_details:
+          allOf:
+          - $ref: '#/components/schemas/Owner'
+          writeOnly: true
+        is_available:
+          type: boolean
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccommodationPhoto'
+          readOnly: true
+        average_rating:
+          type: string
+          readOnly: true
+        rating_count:
+          type: string
+          readOnly: true
+    PatchedAccommodationPhoto:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        accommodation:
+          type: integer
+        image:
+          type: string
+          format: uri
+        image_url:
+          type: string
+          readOnly: true
+        caption:
+          type: string
+          maxLength: 200
+        is_primary:
+          type: boolean
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedCEDARSSpecialist:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 20
+    PatchedHKUCampus:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+    PatchedHKUMember:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 20
+    PatchedReservation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        accommodation:
+          type: integer
+        accommodation_name:
+          type: string
+          readOnly: true
+        member:
+          type: integer
+        member_name:
+          type: string
+          readOnly: true
+        reserved_from:
+          type: string
+          format: date
+        reserved_to:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        status_display:
+          type: string
+          readOnly: true
+        can_be_rated:
+          type: string
+          readOnly: true
+        can_be_cancelled:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    Rating:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        accommodation:
+          type: integer
+        member:
+          type: integer
+        member_name:
+          type: string
+          readOnly: true
+        reservation:
+          type: integer
+        score:
+          type: integer
+          maximum: 5
+          minimum: 0
+        comment:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - accommodation
+      - created_at
+      - id
+      - member
+      - member_name
+      - reservation
+      - score
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        accommodation:
+          type: integer
+        accommodation_name:
+          type: string
+          readOnly: true
+        member:
+          type: integer
+        member_name:
+          type: string
+          readOnly: true
+        reserved_from:
+          type: string
+          format: date
+        reserved_to:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        status_display:
+          type: string
+          readOnly: true
+        can_be_rated:
+          type: string
+          readOnly: true
+        can_be_cancelled:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - accommodation
+      - accommodation_name
+      - can_be_cancelled
+      - can_be_rated
+      - created_at
+      - id
+      - member
+      - member_name
+      - reserved_from
+      - reserved_to
+      - status_display
+      - updated_at
+    StatusEnum:
+      enum:
+      - PENDING
+      - CONFIRMED
+      - CANCELLED
+      - COMPLETED
+      type: string
+      description: |-
+        * `PENDING` - Pending
+        * `CONFIRMED` - Confirmed
+        * `CANCELLED` - Cancelled
+        * `COMPLETED` - Completed
+    TypeEnum:
+      enum:
+      - APARTMENT
+      - HOUSE
+      - SHARED
+      - STUDIO
+      type: string
+      description: |-
+        * `APARTMENT` - Apartment
+        * `HOUSE` - House
+        * `SHARED` - Shared Room
+        * `STUDIO` - Studio
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
